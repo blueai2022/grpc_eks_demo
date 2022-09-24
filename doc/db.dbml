@@ -1,31 +1,28 @@
-Project app_submission {
+  Project app_submission {
   database_type: 'PostgreSQL'
   Note: '''
     # LifeAI App Submission Database
   '''
-}
+}   
 
 Table users as U {
   username varchar [pk]
   hashed_password varchar [not null]
   full_name varchar [not null]
   email varchar [unique, not null]
+  address_id bigint [ref: > AD.id]
   agency varchar 
-  app_contact_name varchar
-  app_contact_email varchar
+  contact_name varchar
+  contact_email varchar
   password_changed_at timestamptz [not null, default: '0001-01-01']
   created_at timestamptz [not null, default: `now()`]
-
-  Indexes {
-    full_name
-    email
-  }
 }
   
 Table clients as C {
   id bigserial [pk]
   agent varchar [ref: > U.username, not null]
   full_name varchar [not null]
+  address_id bigint [ref: > AD.id]
   birth_date timestamptz [not null]
   driver_license_number varchar
   driver_license_state varchar
@@ -42,7 +39,6 @@ Table clients as C {
 
 Table addresses as AD {
   id bigserial [pk]
-  client_id bigint [ref: > C.id, not null]
   address_line1 varchar [not null]
   address_line2 varchar
   city varchar [not null]
@@ -52,19 +48,20 @@ Table addresses as AD {
   created_at timestamptz [not null, default: `now()`]
 
   Indexes {
-    client_id
     address_line1
-    state
+    zip_code
   }
 }
 
 Table applications as A {
   id bigserial [pk]
   agent varchar [ref: > U.username, not null]
+  is_formal boolean [not null]
+  is_1035_exchange boolean
   primary_insured_id bigint [ref: > C.id, not null]
   joint_insured_id bigint [ref: > C.id]
   carriers varchar [not null]
-  product_type_generic varchar [not null, note: 'non carrier-specific product type']
+  product_type varchar [not null, note: 'non carrier-specific product type']
   applied_amount bigint [not null]
   created_at timestamptz [not null, default: `now()`]
   
@@ -80,14 +77,16 @@ Table documents {
   id bigserial [pk]
   application_id bigint [ref: > A.id, not null]
   client_id bigint [ref: > C.id, not null]
-  type varchar [not null]
+  doc_type varchar [not null]
+  file_name varchar [not null]
   file_size varchar [not null]
+  file_type varchar [not null]
   s3_url varchar [not null, note: 's3 bucket url']
   created_at timestamptz [not null, default: `now()`]
 
   Indexes {
     application_id
-    (application_id, client_id)
+    (application_id, file_name)
   }
 }
 
