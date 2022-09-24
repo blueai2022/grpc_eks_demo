@@ -14,19 +14,27 @@ Table users as U {
   password_changed_at timestamptz [not null, default: '0001-01-01']
   created_at timestamptz [not null, default: `now()`]
 }
-
+  
 Table clients as C {
   id bigserial [pk]
+  agent_id varchar [ref: > U.username, not null]
   full_name varchar [not null]
   birth_date timestamptz [not null, default: '0001-01-01']
-  street_address varchar
-  city varchar
-  state varchar
-  zip_code varchar
-  country varchar
   driver_license_number varchar
   driver_license_state varchar
   email varchar [unique, not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table addresses as AD {
+  id bigserial [pk]
+  client_id bigint [ref: > C.id, not null]
+  address_line1 varchar [not null]
+  address_line2 varchar
+  city varchar [not null]
+  state varchar [not null]
+  zip_code varchar [not null]
+  country varchar [not null, default: 'US']
   created_at timestamptz [not null, default: `now()`]
 }
 

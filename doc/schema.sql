@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2022-09-24T01:47:31.945Z
+-- Generated at: 2022-09-24T13:54:28.502Z
 
 CREATE TABLE "users" (
   "username" varchar PRIMARY KEY,
@@ -14,16 +14,24 @@ CREATE TABLE "users" (
 
 CREATE TABLE "clients" (
   "id" bigserial PRIMARY KEY,
+  "agent_id" varchar NOT NULL,
   "full_name" varchar NOT NULL,
   "birth_date" timestamptz NOT NULL DEFAULT '0001-01-01',
-  "street_address" varchar,
-  "city" varchar,
-  "state" varchar,
-  "zip_code" varchar,
-  "country" varchar,
   "driver_license_number" varchar,
   "driver_license_state" varchar,
   "email" varchar UNIQUE NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "addresses" (
+  "id" bigserial PRIMARY KEY,
+  "client_id" bigint NOT NULL,
+  "address_line1" varchar NOT NULL,
+  "address_line2" varchar,
+  "city" varchar NOT NULL,
+  "state" varchar NOT NULL,
+  "zip_code" varchar NOT NULL,
+  "country" varchar NOT NULL DEFAULT 'US',
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -57,6 +65,10 @@ CREATE INDEX ON "documents" ("application_id", "type");
 COMMENT ON COLUMN "applications"."product_type_generic" IS 'non carrier-specific product type';
 
 COMMENT ON COLUMN "documents"."s3_url" IS 's3 bucket url';
+
+ALTER TABLE "clients" ADD FOREIGN KEY ("agent_id") REFERENCES "users" ("username");
+
+ALTER TABLE "addresses" ADD FOREIGN KEY ("client_id") REFERENCES "clients" ("id");
 
 ALTER TABLE "applications" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");
 
