@@ -1,0 +1,87 @@
+Project app_submission {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # LifeAI App Submission Database
+  '''
+}
+
+Table users as U {
+  username varchar [pk]
+  hashed_password varchar [not null]
+  full_name varchar [not null]
+  email varchar [unique, not null]
+  agency varchar 
+  password_changed_at timestamptz [not null, default: '0001-01-01']
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table clients as C {
+  id bigserial [pk]
+  full_name varchar [not null]
+  birth_date timestamptz [not null, default: '0001-01-01']
+  street_address varchar
+  city varchar
+  state varchar
+  zip_code varchar
+  country varchar
+  driver_license_number varchar
+  driver_license_state varchar
+  email varchar [unique, not null]
+  created_at timestamptz [not null, default: `now()`]
+}
+
+Table applications as A {
+  id bigserial [pk]
+  username varchar [ref: > U.username, not null]
+  primary_insured_id bigint [ref: > C.id, not null]
+  joint_insured_id bigint [ref: > C.id]
+  carriers varchar [not null]
+  product_type_generic varchar [not null, note: 'non carrier-specific product type']
+  applied_amount bigint [not null]
+  created_at timestamptz [not null, default: `now()`]
+  
+  Indexes {
+    username
+  }
+}
+
+
+Table documents {
+  id bigserial [pk]
+  application_id bigint [ref: > A.id, not null]
+  is_primary_insured boolean [not null]
+  type varchar [not null]
+  file_size varchar [not null]
+  s3_url varchar [not null, note: 's3 bucket url']
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    application_id
+    (application_id, type)
+  }
+}
+
+// Table transfers {
+//   id bigserial [pk]
+//   from_account_id bigint [ref: > A.id, not null]
+//   to_account_id bigint [ref: > A.id, not null]
+//   amount bigint [not null, note: 'must be positive']
+//   created_at timestamptz [not null, default: `now()`]
+  
+//   Indexes {
+//     from_account_id
+//     to_account_id
+//     (from_account_id, to_account_id)
+//   }
+// }
+
+// Table sessions {
+//   id uuid [pk]
+//   username varchar [ref: > U.username, not null]
+//   refresh_token varchar [not null]
+//   user_agent varchar [not null]
+//   client_ip varchar [not null]
+//   is_blocked boolean [not null, default: false]
+//   expires_at timestamptz [not null]
+//   created_at timestamptz [not null, default: `now()`]
+// }

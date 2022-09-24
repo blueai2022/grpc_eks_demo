@@ -3,5 +3,5 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println("Agent Flow API has started")
+	fmt.Println("LifeAI app submission api has started")
 }
