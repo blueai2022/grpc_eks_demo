@@ -12,8 +12,8 @@ Table users as U {
   email varchar [unique, not null]
   address_id bigint [ref: > AD.id]
   agency varchar 
-  contact_name varchar
-  contact_email varchar
+  app_contact varchar
+  app_contact_email varchar
   password_changed_at timestamptz [not null, default: '0001-01-01']
   created_at timestamptz [not null, default: `now()`]
 }
