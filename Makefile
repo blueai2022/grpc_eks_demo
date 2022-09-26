@@ -1,13 +1,17 @@
 DB_URL=postgresql://root:secretpwd@localhost:5432/app_submission?sslmode=disable
 
 network:
-	docker network create bank-network
+	docker network create lifeai-network
 
 postgres:
-	docker run --name postgres14 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secretpwd -d postgres:14-alpine
+	docker run --name postgres14 --network lifeai-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secretpwd -d postgres:14-alpine
+	docker exec -it postgres14 createdb --username=root --owner=root app_submission
 
 mysql:
 	docker run --name mysql8 -p 3306:3306  -e MYSQL_ROOT_PASSWORD=secret -d mysql:8
+
+server_dkr:
+	docker run --name appsubmission --network lifeai-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secretpwd@postgres14:5432/app_submission?sslmode=disable" appsubmission:latest
 
 createdb:
 	docker exec -it postgres14 createdb --username=root --owner=root app_submission
@@ -58,4 +62,4 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl
 
-.PHONY: network postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
+.PHONY: network postgres server_dkr createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans

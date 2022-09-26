@@ -2,11 +2,13 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	db "github.com/blueai2022/appsubmission/db/sqlc"
 	"github.com/blueai2022/appsubmission/secure"
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type createUserRequest struct {
@@ -44,6 +46,13 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code.Name() {
+			case "unique_violation":
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
+				return
+			}
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -68,8 +77,8 @@ func (server *Server) getUser(ctx *gin.Context) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			//notFoundErr := errors.New(fmt.Sprintf("user not found with username %s", req.Username))
-			ctx.JSON(http.StatusNoContent, nil)
+			notFoundErr := fmt.Errorf("user not found with username %s", req.Username)
+			ctx.JSON(http.StatusNotFound, errorResponse(notFoundErr))
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
