@@ -33,7 +33,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 
 	arg := db.CreateUserParams{
-		Username:        req.FullName,
+		Username:        req.Username,
 		HashedPassword:  hashedPassword,
 		FullName:        req.FullName,
 		Email:           req.Email,
@@ -48,6 +48,34 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
+	//TODO remove hashedPassword from response
 	ctx.JSON(http.StatusOK, user)
 
+}
+
+type getUserRequest struct {
+	Username string `uri:"username" binding:"required"`
+}
+
+func (server *Server) getUser(ctx *gin.Context) {
+	var req getUserRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	user, err := server.store.GetUser(ctx, req.Username)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			//notFoundErr := errors.New(fmt.Sprintf("user not found with username %s", req.Username))
+			ctx.JSON(http.StatusNoContent, nil)
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	//TODO remove hashedPassword from response
+	ctx.JSON(http.StatusOK, user)
 }
