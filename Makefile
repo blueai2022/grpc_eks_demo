@@ -42,9 +42,6 @@ test:
 server:
 	go run main.go
 
-mod_tidy_17:
-	go mod tidy -compat=1.17
-
 mock:
 	mockgen -package mockdb -destination db/mock/store.go github.com/techschool/simplebank/db/sqlc Store
 
@@ -61,4 +58,4 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl
 
-.PHONY: network postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mod_tidy_17 mock proto evans
+.PHONY: network postgres createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
