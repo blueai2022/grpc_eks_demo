@@ -41,7 +41,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -count=1 -cover ./...
+	go test -v -cover ./...
 
 server:
 	go run main.go
