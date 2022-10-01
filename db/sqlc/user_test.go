@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/blueai2022/appsubmission/secure"
+	"github.com/blueai2022/appsubmission/encrypt"
 	"github.com/blueai2022/appsubmission/test"
 	"github.com/stretchr/testify/require"
 )
 
 func randomCreateUserParams(t *testing.T) CreateUserParams {
-	hashedPassword, err := secure.HashPassword(test.RandomString(6))
+	hashedPassword, err := encrypt.HashPassword(test.RandomString(6))
 	require.NoError(t, err)
 
 	params := CreateUserParams{
