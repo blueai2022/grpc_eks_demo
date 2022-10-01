@@ -1,4 +1,5 @@
-DB_URL=postgresql://root:P55geiSp411IH2cVasYV@appsubmission.ckwftjwmrhkw.us-east-1.rds.amazonaws.com:5432/app_submission?sslmode=disable
+# DB_URL=postgresql://root:P55geiSp411IH2cVasYV@appsubmission.ckwftjwmrhkw.us-east-1.rds.amazonaws.com:5432/app_submission?sslmode=disable
+DB_URL=postgresql://root:secretpwd@localhost:5432/app_submission?sslmode=disable
 
 network:
 	docker network create lifeai-network
