@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-submission-api-deployment
+  labels:
+    app: app-submission-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-submission-api
+  template:
+    metadata:
+      labels:
+        app: app-submission-api
+    spec:
+      containers:
+      - name: app-submission-api
+        image: 788755387583.dkr.ecr.us-east-1.amazonaws.com/appsubmission:latest
+        # imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
