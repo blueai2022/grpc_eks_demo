@@ -17,6 +17,6 @@ spec:
       containers:
       - name: app-submission-api
         image: 788755387583.dkr.ecr.us-east-1.amazonaws.com/appsubmission:latest
-        # imagePullPolicy: Always
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
