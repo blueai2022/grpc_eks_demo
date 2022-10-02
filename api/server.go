@@ -50,7 +50,7 @@ func (server *Server) setupRouter() error {
 	// 	return err
 	// }
 
-	authRoutes.POST("/healthai/icd10", setupProxy())
+	authRoutes.POST("/healthai/icd10", setupProxy(server.config.ProxyTargetServer))
 	// router.POST("/backend/healthai/icd10", g.Handler)
 	// authRoutes.GET("/healthai/icd10", server.recognizeICD)
 	authRoutes.GET("/users/:username", server.getUser)

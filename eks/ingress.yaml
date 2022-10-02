@@ -17,13 +17,13 @@ spec:
   - host: "api.lifeai.us"
     http:
       paths:
-      - pathType: Prefix
-        path: "/backend/healthai"
-        backend:
-          service:
-            name: health-api-service
-            port:
-              number: 80
+      # - pathType: Prefix
+      #   path: "/backend/healthai"
+      #   backend:
+      #     service:
+      #       name: health-api-service
+      #       port:
+      #         number: 80
       - pathType: Prefix
         path: "/"
         backend:

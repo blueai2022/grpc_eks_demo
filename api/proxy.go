@@ -8,18 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setupProxy() gin.HandlerFunc {
-
-	target := "api.lifeai.us"
+func setupProxy(target string) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		director := func(req *http.Request) {
 			r := ctx.Request
 
-			req.URL.Scheme = "https"
+			req.Method = r.Method
+
+			req.URL.Scheme = "http"
 			req.URL.Host = target
 			req.Host = target
-			req.Method = r.Method
 
 			backPath := fmt.Sprintf("/backend%s", r.URL.Path)
 			req.URL.Path = backPath
