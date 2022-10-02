@@ -1,4 +1,4 @@
-  Project app_submission {
+Project app_submission {
   database_type: 'PostgreSQL'
   Note: '''
     # LifeAI App Submission Database
@@ -16,6 +16,26 @@ Table users as U {
   app_contact_email varchar
   password_changed_at timestamptz [not null, default: '0001-01-01']
   created_at timestamptz [not null, default: `now()`]
+}
+
+Table api_accounts as ACT {
+  id bigserial [pk]
+  username varchar [ref: > U.username, not null]
+  is_active boolean [not null, default: true]
+  is_auto_renewal boolean [not null, default: false]
+  service_type varchar [not null, default: 'ICD', note: 'ICD|ICD_PRO|APS|APS_TXT|ALL'] 
+  plan_name varchar [not null, default: 'DEMO', note: 'DEMO|BASIC|PRO']
+  credit_balance bigint [not null]
+  active_at timestamptz [not null, default: `now()`]
+  last_use_at timestamptz [not null]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    username
+    (username, is_active)
+    (username, is_active, service_type) [unique]
+  }
 }
   
 Table clients as C {

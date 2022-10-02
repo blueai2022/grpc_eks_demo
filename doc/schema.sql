@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2022-09-25T12:05:04.803Z
+-- Generated at: 2022-10-02T14:51:53.947Z
 
 CREATE TABLE "users" (
   "username" varchar PRIMARY KEY,
@@ -12,6 +12,20 @@ CREATE TABLE "users" (
   "app_contact" varchar,
   "app_contact_email" varchar,
   "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01',
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "api_accounts" (
+  "id" bigserial PRIMARY KEY,
+  "username" varchar NOT NULL,
+  "is_active" boolean NOT NULL DEFAULT true,
+  "is_auto_renewal" boolean NOT NULL DEFAULT false,
+  "service_type" varchar NOT NULL DEFAULT 'ICD',
+  "plan_name" varchar NOT NULL DEFAULT 'DEMO',
+  "credit_balance" bigint NOT NULL,
+  "active_at" timestamptz NOT NULL DEFAULT (now()),
+  "last_use_at" timestamptz NOT NULL,
+  "expires_at" timestamptz NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -63,6 +77,12 @@ CREATE TABLE "documents" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE INDEX ON "api_accounts" ("username");
+
+CREATE INDEX ON "api_accounts" ("username", "is_active");
+
+CREATE UNIQUE INDEX ON "api_accounts" ("username", "is_active", "service_type");
+
 CREATE INDEX ON "clients" ("agent");
 
 CREATE INDEX ON "clients" ("agent", "full_name");
@@ -85,11 +105,17 @@ CREATE INDEX ON "documents" ("application_id");
 
 CREATE INDEX ON "documents" ("application_id", "file_name");
 
+COMMENT ON COLUMN "api_accounts"."service_type" IS 'ICD|ICD_PRO|APS|APS_TXT|ALL';
+
+COMMENT ON COLUMN "api_accounts"."plan_name" IS 'DEMO|BASIC|PRO';
+
 COMMENT ON COLUMN "applications"."product_type" IS 'non carrier-specific product type';
 
 COMMENT ON COLUMN "documents"."s3_url" IS 's3 bucket url';
 
 ALTER TABLE "users" ADD FOREIGN KEY ("address_id") REFERENCES "addresses" ("id");
+
+ALTER TABLE "api_accounts" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");
 
 ALTER TABLE "clients" ADD FOREIGN KEY ("agent") REFERENCES "users" ("username");
 
