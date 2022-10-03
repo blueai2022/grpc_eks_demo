@@ -43,7 +43,7 @@ func (server *Server) setupRouter() error {
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 
-	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker, server.store))
 
 	// g, err := ginproxy.NewGinProxy("http://api.lifeai.us")
 	// if err != nil {
