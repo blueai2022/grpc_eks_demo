@@ -9,8 +9,12 @@ import (
 )
 
 type Querier interface {
+	CreateApiAccount(ctx context.Context, arg CreateApiAccountParams) (ApiAccount, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DebitApiAccountBalance(ctx context.Context, id int64) (ApiAccount, error)
 	DeleteUser(ctx context.Context, username string) error
+	GetActiveApiAccount(ctx context.Context, arg GetActiveApiAccountParams) (ApiAccount, error)
+	GetApiAccount(ctx context.Context, id int64) (ApiAccount, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	GetUserForUpdate(ctx context.Context, username string) (User, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
