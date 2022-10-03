@@ -57,7 +57,8 @@ func authMiddleware(tokenMaker token.Maker, store db.Store) gin.HandlerFunc {
 		_, err = store.GetActiveApiAccount(ctx, getAccountParam)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(err))
+				verr := fmt.Errorf("api account not found for user %s", payload.Username)
+				ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(verr))
 				return
 			}
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
