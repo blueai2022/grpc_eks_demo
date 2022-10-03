@@ -14,7 +14,7 @@ func randomCreateAccountParams(t *testing.T, username string) CreateApiAccountPa
 		IsActive:      true,
 		ServiceType:   "ICD",
 		PlanName:      "DEMO",
-		CreditBalance: 100,
+		CreditBalance: 50,
 	}
 	return params
 }
