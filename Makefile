@@ -1,6 +1,9 @@
 # DB_URL=postgresql://root:P55geiSp411IH2cVasYV@appsubmission.ckwftjwmrhkw.us-east-1.rds.amazonaws.com:5432/app_submission?sslmode=disable
 DB_URL=postgresql://root:secretpwd@localhost:5432/app_submission?sslmode=disable
 
+k8_version:
+	curl http://storage.googleapis.com/kubernetes-release/release/stable.txt
+
 network:
 	docker network create lifeai-network
 
@@ -63,4 +66,4 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl
 
-.PHONY: network postgres server_dkr createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
+.PHONY: k8_version network postgres server_dkr createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
