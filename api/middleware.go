@@ -1,10 +1,12 @@
 package api
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
 
+	db "github.com/blueai2022/appsubmission/db/sqlc"
 	"github.com/blueai2022/appsubmission/token"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +17,7 @@ const (
 	authPayloadKey = "authorization_payload"
 )
 
-func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
+func authMiddleware(tokenMaker token.Maker, store db.Store) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader(authHeaderKey)
 		if len(authHeader) == 0 {
@@ -44,6 +46,21 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
+			return
+		}
+
+		getAccountParam := db.GetActiveApiAccountParams{
+			Username:    payload.Username,
+			ServiceType: "ICD",
+		}
+
+		_, err = store.GetActiveApiAccount(ctx, getAccountParam)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(err))
+				return
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
 

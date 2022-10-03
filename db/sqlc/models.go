@@ -20,6 +20,22 @@ type Address struct {
 	CreatedAt    time.Time      `json:"created_at"`
 }
 
+type ApiAccount struct {
+	ID            int64  `json:"id"`
+	Username      string `json:"username"`
+	IsActive      bool   `json:"is_active"`
+	IsAutoRenewal bool   `json:"is_auto_renewal"`
+	// ICD|ICD_PRO|APS|APS_TXT|ALL
+	ServiceType string `json:"service_type"`
+	// DEMO|BASIC|PRO
+	PlanName      string    `json:"plan_name"`
+	CreditBalance int64     `json:"credit_balance"`
+	ActiveAt      time.Time `json:"active_at"`
+	LastUseAt     time.Time `json:"last_use_at"`
+	ExpiresAt     time.Time `json:"expires_at"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
 type Application struct {
 	ID               int64         `json:"id"`
 	Agent            string        `json:"agent"`
