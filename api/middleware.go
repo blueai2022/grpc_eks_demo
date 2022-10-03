@@ -54,16 +54,24 @@ func authMiddleware(tokenMaker token.Maker, store db.Store) gin.HandlerFunc {
 			ServiceType: "ICD",
 		}
 
-		_, err = store.GetActiveApiAccount(ctx, getAccountParam)
+		apiAcct, err := store.GetActiveApiAccount(ctx, getAccountParam)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				verr := fmt.Errorf("api account not found for user %s", payload.Username)
+				verr := fmt.Errorf("active api account not found for user %s", payload.Username)
 				ctx.AbortWithStatusJSON(http.StatusNotFound, errorResponse(verr))
 				return
 			}
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
+
+		if apiAcct.CreditBalance < 1 {
+			verr := fmt.Errorf("api credits exhausted for user %s", payload.Username)
+			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(verr))
+			return
+		}
+
+		store.DebitApiAccountBalance(ctx, apiAcct.ID)
 
 		ctx.Set(authPayloadKey, payload)
 		ctx.Next()
