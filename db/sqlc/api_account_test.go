@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/blueai2022/appsubmission/encrypt"
+	"github.com/blueai2022/appsubmission/crypt"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,7 +22,7 @@ func randomCreateAccountParams(t *testing.T, username string) CreateApiAccountPa
 func TestCreateApiAccount(t *testing.T) {
 	arg := randomCreateUserParams(t)
 	// fixed password for api account testing in Postman
-	hashedPassword, err := encrypt.HashPassword("secret")
+	hashedPassword, err := crypt.HashPassword("secret")
 	require.NoError(t, err)
 
 	arg.HashedPassword = hashedPassword

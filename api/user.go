@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/blueai2022/appsubmission/crypt"
 	db "github.com/blueai2022/appsubmission/db/sqlc"
-	"github.com/blueai2022/appsubmission/encrypt"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
@@ -54,7 +54,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := encrypt.HashPassword(req.Password)
+	hashedPassword, err := crypt.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -142,7 +142,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	err = encrypt.CheckPassword(req.Password, user.HashedPassword)
+	err = crypt.CheckPassword(req.Password, user.HashedPassword)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
 		return
