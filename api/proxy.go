@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func setupProxy(target string) gin.HandlerFunc {
+func setupGinProxy(target string) gin.HandlerFunc {
 
 	return func(ctx *gin.Context) {
 		director := func(req *http.Request) {

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package pb;
+
+import "icd.proto";
+
+option go_package = "github.com/blueai2022/appsubmission/pb";
+
+message RecognizeICD10Request {
+    string medical_text = 1;
+}
+
+message RecognizeICD10Response {
+    bool success = 1;
+    ICD10 result = 2;
+}

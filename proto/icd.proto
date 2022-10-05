@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/blueai2022/appsubmission/pb";
+
+// message ICDDefinition {
+//     string code = 1;
+//     string desc = 2;
+// }
+
+message ICD10 {
+    string entity_type = 1;
+    string icd10 = 2;
+    string icd10_desc = 3;
+    string icd9 = 4;
+    string icd9_desc = 5;
+    string recognized_medical_text = 6;
+}
