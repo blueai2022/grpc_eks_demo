@@ -7,8 +7,20 @@ import "rpc_create_user.proto";
 import "rpc_login_user.proto";
 import "rpc_get_user.proto";
 import "rpc_recognize_icd.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/blueai2022/appsubmission/pb";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Life AI Health API";
+    version: "1.1";
+    contact: {
+      name: "LifeAI Project";
+      url: "https://github.com/lifeai-us/healthapi";
+      email: "lifeai.us@gmail.com";
+    };
+  };
+};
 
 service LifeAI {
     rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
@@ -16,22 +28,38 @@ service LifeAI {
             post: "/v1/create_user"
             body: "*"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this API to create new user";
+            summary: "Create new user";
+        };
     }
     rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
         option (google.api.http) = {
             post: "/v1/login_user"
             body: "*"
         };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this API to login user and retrieve access token";
+            summary: "Login user";
+        };
     }   
     rpc GetUser (GetUserRequest) returns (GetUserResponse) {
         option (google.api.http) = {
             get: "/v1/get_user/{username}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this API to retrieve user info";
+            summary: "Get user info";
         };
     }   
     rpc RecognizeICD10 (RecognizeICD10Request) returns (RecognizeICD10Response) {
         option (google.api.http) = {
             post: "/v1/recognize_icd10"
             body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this API to recognize medical diagnosis in text and retrieve its ICD10";
+            summary: "Recognize medical diagnosis in text and return ICD10 for it";
         };
     }
 }
