@@ -35,7 +35,6 @@ func main() {
 	go runGatewayServer(&config, store)
 	runGrpcServer(&config, store)
 	// runGinServer(&config, store)
-	//log.Println("Life AI api has been started...")
 }
 
 func runGrpcServer(config *config.Config, store db.Store) {
