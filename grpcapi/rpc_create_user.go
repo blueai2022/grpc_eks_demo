@@ -11,6 +11,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	icdServiceType     = "ICD"
+	demoAccountCredits = 25
+	demoPlanName       = "DEMO"
+)
+
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	hashedPassword, err := crypt.HashPassword(req.GetPassword())
 	if err != nil {
@@ -39,6 +45,18 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	pbUser := convertUser(user)
+
+	acctArg := db.CreateApiAccountParams{
+		Username:      req.Username,
+		IsActive:      true,
+		ServiceType:   icdServiceType,
+		PlanName:      demoPlanName,
+		CreditBalance: demoAccountCredits,
+	}
+	_, err = server.store.CreateApiAccount(ctx, acctArg)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create api account for user: %s", err)
+	}
 
 	rsp := &pb.CreateUserResponse{
 		User: pbUser,
