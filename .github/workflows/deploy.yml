@@ -2,7 +2,7 @@ name: deploy_to_prod
 
 on:
   push:
-    branches: [ main ]
+    branches: [ release ]
 
 jobs:
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"encoding/json"
@@ -63,7 +63,7 @@ func (server *Server) RecognizeICD10(ctx context.Context, req *pb.RecognizeICD10
 	}
 
 	icd := &pb.ICD10{}
-	body, err := ioutil.ReadAll(backendRsp.Body)
+	body, err := io.ReadAll(backendRsp.Body)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to read health api response: %s", err)
 	}
