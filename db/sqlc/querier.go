@@ -6,15 +6,19 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CreateApiAccount(ctx context.Context, arg CreateApiAccountParams) (ApiAccount, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DebitApiAccountBalance(ctx context.Context, id int64) (ApiAccount, error)
 	DeleteUser(ctx context.Context, username string) error
 	GetActiveApiAccount(ctx context.Context, arg GetActiveApiAccountParams) (ApiAccount, error)
 	GetApiAccount(ctx context.Context, id int64) (ApiAccount, error)
+	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, username string) (User, error)
 	GetUserForUpdate(ctx context.Context, username string) (User, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)

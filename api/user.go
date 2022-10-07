@@ -121,8 +121,9 @@ type loginUserRequest struct {
 }
 
 type loginUserResponse struct {
-	AccessToken string       `json:"access_token"`
 	User        userResponse `json:"user"`
+	SessionID   string       `json:"session_id"`
+	AccessToken string       `json:"access_token"`
 }
 
 func (server *Server) loginUser(ctx *gin.Context) {
@@ -148,7 +149,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, err := server.tokenMaker.CreateToken(
+	accessToken, payload, err := server.tokenMaker.CreateToken(
 		req.Username,
 		server.config.AccessTokenDuration,
 	)
@@ -158,8 +159,9 @@ func (server *Server) loginUser(ctx *gin.Context) {
 	}
 
 	rsp := loginUserResponse{
-		AccessToken: accessToken,
 		User:        newUserResponse(user),
+		SessionID:   payload.ID.String(),
+		AccessToken: accessToken,
 	}
 	ctx.JSON(http.StatusOK, rsp)
 }

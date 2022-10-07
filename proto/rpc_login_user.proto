@@ -3,6 +3,7 @@ syntax = "proto3";
 package pb;
 
 import "user.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/blueai2022/appsubmission/pb";
 
@@ -12,6 +13,10 @@ message LoginUserRequest {
 }
 
 message LoginUserResponse {
-    string access_token = 1;
-    User user = 2;
+    User user = 1;
+    string session_id = 2;
+    string access_token = 3;
+    string refresh_token = 4;
+    google.protobuf.Timestamp access_token_expired_at = 5;
+    google.protobuf.Timestamp refresh_token_expired_at = 6;
 }

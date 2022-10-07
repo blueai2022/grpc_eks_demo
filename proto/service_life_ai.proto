@@ -7,6 +7,7 @@ import "rpc_create_user.proto";
 import "rpc_login_user.proto";
 import "rpc_get_user.proto";
 import "rpc_recognize_icd.proto";
+import "rpc_renew_access_token.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/blueai2022/appsubmission/pb";
@@ -39,10 +40,20 @@ service LifeAI {
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            description: "Use this API to login user and retrieve access token";
+            description: "Use this API to login user and retrieve access token and refresh token";
             summary: "Login user";
         };
     }   
+    rpc RenewAccessToken (RenewAccessTokenRequest) returns (RenewAccessTokenResponse) {
+        option (google.api.http) = {
+            post: "/v1/renew_access_token"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            description: "Use this API to renew access token using refresh token";
+            summary: "Renew access token";
+        };
+    }       
     rpc GetUser (GetUserRequest) returns (GetUserResponse) {
         option (google.api.http) = {
             get: "/v1/get_user/{username}"

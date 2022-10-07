@@ -90,7 +90,7 @@
     "/v1/login_user": {
       "post": {
         "summary": "Login user",
-        "description": "Use this API to login user and retrieve access token",
+        "description": "Use this API to login user and retrieve access token and refresh token",
         "operationId": "LifeAI_LoginUser",
         "responses": {
           "200": {
@@ -147,6 +147,40 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/pbRecognizeICD10Request"
+            }
+          }
+        ],
+        "tags": [
+          "LifeAI"
+        ]
+      }
+    },
+    "/v1/renew_access_token": {
+      "post": {
+        "summary": "Renew access token",
+        "description": "Use this API to renew access token using refresh token",
+        "operationId": "LifeAI_RenewAccessToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRenewAccessTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbRenewAccessTokenRequest"
             }
           }
         ],
@@ -227,11 +261,25 @@
     "pbLoginUserResponse": {
       "type": "object",
       "properties": {
+        "user": {
+          "$ref": "#/definitions/pbUser"
+        },
+        "sessionId": {
+          "type": "string"
+        },
         "accessToken": {
           "type": "string"
         },
-        "user": {
-          "$ref": "#/definitions/pbUser"
+        "refreshToken": {
+          "type": "string"
+        },
+        "accessTokenExpiredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "refreshTokenExpiredAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -251,6 +299,26 @@
         },
         "result": {
           "$ref": "#/definitions/pbICD10"
+        }
+      }
+    },
+    "pbRenewAccessTokenRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "pbRenewAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "accessTokenExpiredAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

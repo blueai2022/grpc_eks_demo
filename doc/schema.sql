@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2022-10-02T14:51:53.947Z
+-- Generated at: 2022-10-06T18:31:33.220Z
 
 CREATE TABLE "users" (
   "username" varchar PRIMARY KEY,
@@ -77,6 +77,17 @@ CREATE TABLE "documents" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "sessions" (
+  "id" uuid PRIMARY KEY,
+  "username" varchar NOT NULL,
+  "refresh_token" varchar NOT NULL,
+  "user_agent" varchar NOT NULL,
+  "client_ip" varchar NOT NULL,
+  "is_blocked" boolean NOT NULL DEFAULT false,
+  "expires_at" timestamptz NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
 CREATE INDEX ON "api_accounts" ("username");
 
 CREATE INDEX ON "api_accounts" ("username", "is_active");
@@ -105,6 +116,10 @@ CREATE INDEX ON "documents" ("application_id");
 
 CREATE INDEX ON "documents" ("application_id", "file_name");
 
+CREATE INDEX ON "sessions" ("username");
+
+CREATE UNIQUE INDEX ON "sessions" ("username", "refresh_token");
+
 COMMENT ON COLUMN "api_accounts"."service_type" IS 'ICD|ICD_PRO|APS|APS_TXT|ALL';
 
 COMMENT ON COLUMN "api_accounts"."plan_name" IS 'DEMO|BASIC|PRO';
@@ -130,3 +145,5 @@ ALTER TABLE "applications" ADD FOREIGN KEY ("joint_insured_id") REFERENCES "clie
 ALTER TABLE "documents" ADD FOREIGN KEY ("application_id") REFERENCES "applications" ("id");
 
 ALTER TABLE "documents" ADD FOREIGN KEY ("client_id") REFERENCES "clients" ("id");
+
+ALTER TABLE "sessions" ADD FOREIGN KEY ("username") REFERENCES "users" ("username");

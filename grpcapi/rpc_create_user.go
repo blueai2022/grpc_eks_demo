@@ -22,15 +22,7 @@ const (
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	violations := validateCreateUserRequest(req)
 	if len(violations) > 0 {
-		badRequest := &errdetails.BadRequest{FieldViolations: violations}
-		statusInvalid := status.New(codes.InvalidArgument, "invalid parameters")
-
-		statusWithDetails, err := statusInvalid.WithDetails(badRequest)
-		if err != nil {
-			return nil, statusInvalid.Err()
-		}
-		return nil, statusWithDetails.Err()
-
+		return nil, invalidArgumentError(violations)
 	}
 
 	hashedPassword, err := crypt.HashPassword(req.GetPassword())

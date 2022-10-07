@@ -37,7 +37,7 @@ Table api_accounts as ACT {
     (username, is_active, service_type) [unique]
   }
 }
-  
+
 Table clients as C {
   id bigserial [pk]
   agent varchar [ref: > U.username, not null]
@@ -124,13 +124,27 @@ Table documents {
 //   }
 // }
 
+Table sessions {
+  id uuid [pk]
+  username varchar [ref: > U.username, not null]
+  refresh_token varchar [not null]
+  user_agent varchar [not null]
+  client_ip varchar [not null]
+  is_blocked boolean [not null, default: false]
+  expires_at timestamptz [not null]
+  created_at timestamptz [not null, default: `now()`]
+
+  Indexes {
+    username
+    (username, refresh_token) [unique]
+  }
+}
+
 // Table sessions {
-//   id uuid [pk]
+//   id uuid [pk] [default: `uuid_generate_v4()`]
 //   username varchar [ref: > U.username, not null]
 //   refresh_token varchar [not null]
-//   user_agent varchar [not null]
-//   client_ip varchar [not null]
-//   is_blocked boolean [not null, default: false]
+//   is_blocked boolean [not null, default: true]
 //   expires_at timestamptz [not null]
 //   created_at timestamptz [not null, default: `now()`]
 // }
