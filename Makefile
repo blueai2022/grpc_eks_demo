@@ -14,7 +14,7 @@ postgres:
 mysql:
 	docker run --name mysql8 -p 3306:3306  -e MYSQL_ROOT_PASSWORD=secret -d mysql:8
 
-server_dkr:
+server_docker:
 	docker run --name appsubmission --network lifeai-network -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:secretpwd@postgres14:5432/app_submission?sslmode=disable" appsubmission:latest
 
 createdb:
@@ -66,4 +66,4 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl
 
-.PHONY: k8_version network postgres server_dkr createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
+.PHONY: k8_version network postgres server_docker createdb dropdb migrateup migratedown migrateup1 migratedown1 db_docs db_schema sqlc test server mock proto evans
