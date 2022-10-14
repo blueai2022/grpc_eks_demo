@@ -4,13 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io"
-	"log"
 
-	"encoding/json"
-
+	"github.com/blueai2022/appsubmission/adapter"
 	db "github.com/blueai2022/appsubmission/db/sqlc"
-	"github.com/blueai2022/appsubmission/http"
 	"github.com/blueai2022/appsubmission/pb"
 	fieldmask_utils "github.com/mennanov/fieldmask-utils"
 	"google.golang.org/grpc/codes"
@@ -42,47 +38,24 @@ func (server *Server) RecognizeICD10(ctx context.Context, req *pb.RecognizeICD10
 		return nil, unauthenticatedError(verr)
 	}
 
-	reqBody := fmt.Sprintf("{\"medical_text\": \"%s\"}", req.MedicalText)
-	backendRsp, err := http.PostProxy(
-		server.config.ProxyTargetServer,
-		"/backend/healthai/icd10",
-		reqBody,
-		"application/json",
-	)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to call health api: %s", err)
-	}
-
-	if backendRsp.StatusCode != 200 && backendRsp.StatusCode != 204 {
-		verr := fmt.Errorf("status code %s", backendRsp.Status)
-		return nil, status.Errorf(codes.Internal, "received error health api response: %s", verr)
-	}
-
-	if backendRsp.StatusCode == 204 {
-		server.store.DebitApiAccountBalance(ctx, apiAcct.ID)
-		return nil, status.Errorf(codes.NotFound, "medical entity not detected")
-	}
-
 	icd := &pb.ICD10{}
-	body, err := io.ReadAll(backendRsp.Body)
+	err = adapter.ICD10(server.config, req.MedicalText, icd)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to read health api response: %s", err)
-	}
-
-	err = json.Unmarshal(body, icd)
-	if err != nil {
-		log.Printf("unexpected response body from health api: %s", body)
-		return nil, status.Errorf(codes.Internal, "invalid health api response: %s", err)
+		if err == adapter.ErrMedicalEntityNotFound {
+			server.store.DebitApiAccountBalance(ctx, apiAcct.ID)
+			return nil, status.Errorf(codes.NotFound, "medical entity not detected")
+		}
+		return nil, status.Errorf(codes.Internal, "failed to call health api: %s", err)
 	}
 
 	server.store.DebitApiAccountBalance(ctx, apiAcct.ID)
 
-	//Not Shown: reduce DB/backend calls according to field masks
 	rsp := &pb.RecognizeICD10Response{
 		Success: true,
 		Result:  icd,
 	}
-
+	//Field masking:
+	//Not Shown: reduce DB/backend calls according to field masks
 	//Shown below: apply mask to reduce response payload
 	// Only the fields mentioned in the field mask will be copied to userDst, other fields are left intact
 	rspDst := &pb.RecognizeICD10Response{} // a struct to copy to
