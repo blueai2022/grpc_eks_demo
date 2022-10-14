@@ -1,11 +1,17 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	backChanProtocol    = "http"
+	jsonContentType     = "application/json"
+	authorizationHeader = "Authorization"
+	backUrlPathPrefix   = "/backend"
 )
 
 func setupGinProxy(target string) gin.HandlerFunc {
@@ -16,22 +22,20 @@ func setupGinProxy(target string) gin.HandlerFunc {
 
 			req.Method = r.Method
 
-			req.URL.Scheme = "http"
+			req.URL.Scheme = backChanProtocol
 			req.URL.Host = target
 			req.Host = target
 
-			backPath := fmt.Sprintf("/backend%s", r.URL.Path)
+			backPath := backUrlPathPrefix + r.URL.Path
 			req.URL.Path = backPath
 			req.RequestURI = backPath
 
-			// req.Header["my-header"] = []string{r.Header.Get("my-header")}
-			// Golang camelcases headers
-			delete(req.Header, "Authorization")
-			// log.Printf("orig req details: %v", ctx.Request)
-			// log.Printf("req details: %v", req)
+			delete(req.Header, authorizationHeader)
+			// log.Printf("orig req: %v", ctx.Request)
+			// log.Printf("outbound req: %v", req)
+
 		}
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(ctx.Writer, ctx.Request)
-		// log.Printf("proxy called %v", proxy.Director)
 	}
 }
