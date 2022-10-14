@@ -288,6 +288,9 @@
       "properties": {
         "medicalText": {
           "type": "string"
+        },
+        "fieldMask": {
+          "type": "string"
         }
       }
     },

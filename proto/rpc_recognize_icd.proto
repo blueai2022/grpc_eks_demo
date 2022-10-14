@@ -2,12 +2,14 @@ syntax = "proto3";
 
 package pb;
 
+import "google/protobuf/field_mask.proto";
 import "icd.proto";
 
 option go_package = "github.com/blueai2022/appsubmission/pb";
 
 message RecognizeICD10Request {
     string medical_text = 1;
+    google.protobuf.FieldMask field_mask = 2;
 }
 
 message RecognizeICD10Response {

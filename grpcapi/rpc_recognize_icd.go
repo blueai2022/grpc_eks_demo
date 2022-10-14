@@ -12,6 +12,7 @@ import (
 	db "github.com/blueai2022/appsubmission/db/sqlc"
 	"github.com/blueai2022/appsubmission/http"
 	"github.com/blueai2022/appsubmission/pb"
+	fieldmask_utils "github.com/mennanov/fieldmask-utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -76,10 +77,17 @@ func (server *Server) RecognizeICD10(ctx context.Context, req *pb.RecognizeICD10
 
 	server.store.DebitApiAccountBalance(ctx, apiAcct.ID)
 
+	//Not Shown: reduce DB/backend calls according to field masks
 	rsp := &pb.RecognizeICD10Response{
 		Success: true,
 		Result:  icd,
 	}
 
-	return rsp, nil
+	//Shown below: apply mask to reduce response payload
+	// Only the fields mentioned in the field mask will be copied to userDst, other fields are left intact
+	rspDst := &pb.RecognizeICD10Response{} // a struct to copy to
+	mask, _ := fieldmask_utils.MaskFromPaths(req.FieldMask.Paths, naming)
+	fieldmask_utils.StructToStruct(mask, rsp, rspDst)
+
+	return rspDst, nil
 }

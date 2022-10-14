@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/lib/pq v1.10.7
+	github.com/mennanov/fieldmask-utils v0.7.0
 	github.com/o1egl/paseto v1.0.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/viper v1.13.0
