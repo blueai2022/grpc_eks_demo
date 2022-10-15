@@ -43,11 +43,13 @@ func (server *Server) setupRouter() error {
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 
+	router.GET("/users/:username", server.getUser)
+
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker, server.store))
 
 	authRoutes.POST("/healthai/icd10", setupGinProxy(server.config.HealthApiServerAddress))
 	// authRoutes.GET("/healthai/icd10", server.recognizeICD)
-	authRoutes.GET("/users/:username", server.getUser)
+	// authRoutes.GET("/users/:username", server.getUser)
 
 	server.router = router
 
