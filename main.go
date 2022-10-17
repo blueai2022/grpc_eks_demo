@@ -3,9 +3,13 @@ package main
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net"
 	"net/http"
+	"os"
+	"strings"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/blueai2022/appsubmission/api"
 	"github.com/blueai2022/appsubmission/config"
@@ -21,15 +25,24 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+const (
+	devEnvironment = "development"
+)
+
 func main() {
 	config, err := config.Load(".")
 	if err != nil {
-		log.Fatal("cannot load config:", err)
+		log.Fatal().Err(err).Msg("cannot load config")
+	}
+
+	//development: pretty print
+	if strings.ToLower(config.Environment) == devEnvironment {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
-		log.Fatal("cannot connect to db:", err)
+		log.Fatal().Err(err).Msg("cannot connect to db")
 	}
 
 	store := db.NewStore(conn)
@@ -42,22 +55,23 @@ func main() {
 func runGrpcServer(config *config.Config, store db.Store) {
 	apiServer, err := grpcapi.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create api server for gRPC:", err)
+		log.Fatal().Err(err).Msg("cannot create api server for gRPC")
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(grpcapi.GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
 	pb.RegisterLifeAIServer(grpcServer, apiServer)
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
 	if err != nil {
-		log.Fatal("cannot create listener for gRPC:", err)
+		log.Fatal().Err(err).Msg("cannot create listener for gRPC")
 	}
 
-	log.Printf("starting gRPC server at %s", listener.Addr().String())
+	log.Info().Msgf("starting gRPC server at %s", listener.Addr().String())
 	err = grpcServer.Serve(listener)
 	if err != nil {
-		log.Fatal("cannot start gRPC server:", err)
+		log.Fatal().Err(err).Msg("cannot start gRPC server")
 	}
 
 }
@@ -65,7 +79,7 @@ func runGrpcServer(config *config.Config, store db.Store) {
 func runGatewayServer(config *config.Config, store db.Store) {
 	apiServer, err := grpcapi.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create api server for gRPC:", err)
+		log.Fatal().Err(err).Msg("cannot create api server for gRPC")
 	}
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
@@ -83,7 +97,7 @@ func runGatewayServer(config *config.Config, store db.Store) {
 
 	err = pb.RegisterLifeAIHandlerServer(ctx, grpcMux, apiServer)
 	if err != nil {
-		log.Fatal("cannot register handler server:", err)
+		log.Fatal().Err(err).Msg("cannot register handler server")
 	}
 
 	mux := http.NewServeMux()
@@ -92,7 +106,7 @@ func runGatewayServer(config *config.Config, store db.Store) {
 	// fs := http.FileServer(http.Dir("./doc/swagger"))
 	statikFS, err := fs.New()
 	if err != nil {
-		log.Fatal("cannot create statik fs:", err)
+		log.Fatal().Err(err).Msg("cannot create statik fs")
 	}
 
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statikFS))
@@ -100,13 +114,13 @@ func runGatewayServer(config *config.Config, store db.Store) {
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 	if err != nil {
-		log.Fatal("cannot create listener for HTTP gateway:", err)
+		log.Fatal().Err(err).Msg("cannot create listener for HTTP gateway")
 	}
 
-	log.Printf("starting HTTP gateway server at %s", listener.Addr().String())
+	log.Info().Msgf("starting HTTP gateway server at %s", listener.Addr().String())
 	err = http.Serve(listener, mux)
 	if err != nil {
-		log.Fatal("cannot start HTTP gateway server:", err)
+		log.Fatal().Err(err).Msg("cannot start HTTP gateway server")
 	}
 
 }
@@ -114,11 +128,11 @@ func runGatewayServer(config *config.Config, store db.Store) {
 func runGinServer(config *config.Config, store db.Store) {
 	server, err := api.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create server:", err)
+		log.Fatal().Err(err).Msg("cannot create server")
 	}
 
 	err = server.Start(config.HTTPServerAddress)
 	if err != nil {
-		log.Fatal("cannot start server:", err)
+		log.Fatal().Err(err).Msg("cannot start server")
 	}
 }
