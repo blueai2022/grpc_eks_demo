@@ -1,4 +1,4 @@
-package proxy
+package healthapi
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ const (
 	defaultTimeoutSecs = 15
 )
 
-func Post(url string, body []byte, contentType string) (*http.Response, error) {
+func post(url string, body []byte, contentType string) (*http.Response, error) {
 	reader := bytes.NewReader(body)
 
 	req, err := http.NewRequest(http.MethodPost, url, reader)

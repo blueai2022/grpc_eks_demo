@@ -11,10 +11,16 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	// "github.com/99designs/gqlgen/example/federation/reviews/graph"
+	// "github.com/99designs/gqlgen/example/starwars/generated"
+	// "github.com/99designs/gqlgen/graphql/handler"
+	// "github.com/99designs/gqlgen/graphql/playground"
+
 	"github.com/blueai2022/appsubmission/api"
 	"github.com/blueai2022/appsubmission/config"
 	db "github.com/blueai2022/appsubmission/db/sqlc"
 	_ "github.com/blueai2022/appsubmission/doc/statik"
+	"github.com/blueai2022/appsubmission/graphql"
 	"github.com/blueai2022/appsubmission/grpcapi"
 	"github.com/blueai2022/appsubmission/pb"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -48,8 +54,23 @@ func main() {
 	store := db.NewStore(conn)
 
 	go runGatewayServer(&config, store)
+	go runGraphQLServer(&config, store)
 	runGrpcServer(&config, store)
 	// runGinServer(&config, store)
+}
+
+func runGraphQLServer(config *config.Config, store db.Store) {
+	// server, err :=
+	server, err := graphql.NewServer(config, store)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot create GraphQL server")
+	}
+
+	log.Info().Msgf("starting GraphQL server at %s", config.GraphQLServerAddress)
+	err = server.Start(config.GraphQLServerAddress)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot start server")
+	}
 }
 
 func runGrpcServer(config *config.Config, store db.Store) {

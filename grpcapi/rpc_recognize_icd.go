@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/blueai2022/appsubmission/adapter"
 	db "github.com/blueai2022/appsubmission/db/sqlc"
+	"github.com/blueai2022/appsubmission/healthapi"
 	"github.com/blueai2022/appsubmission/pb"
 	fieldmask_utils "github.com/mennanov/fieldmask-utils"
 	"google.golang.org/grpc/codes"
@@ -39,9 +39,9 @@ func (server *Server) RecognizeICD10(ctx context.Context, req *pb.RecognizeICD10
 	}
 
 	icd := &pb.ICD10{}
-	err = adapter.ICD10(server.config, req.MedicalText, icd)
+	err = healthapi.ICD10(server.config, req.MedicalText, icd)
 	if err != nil {
-		if err == adapter.ErrMedicalEntityNotFound {
+		if err == healthapi.ErrMedicalEntityNotFound {
 			server.store.DebitApiAccountBalance(ctx, apiAcct.ID)
 			return nil, status.Errorf(codes.NotFound, "medical entity not detected")
 		}

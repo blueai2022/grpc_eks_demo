@@ -1,0 +1,31 @@
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+schema:
+  - graphql/*.graphqls
+exec:
+  filename: graphql/generated.go
+model:
+  filename: graphql/models_gen.go
+
+resolver:
+  layout: follow-schema
+  dir: graphql
+  package: graphql
+# models:
+#   User:
+#     model: github.com/blueai2022/appsubmission/graphql.User
+#   Account:
+#     model: github.com/blueai2022/appsubmission/graphql.Account
+#     # fields:
+#     #   owner:
+#     #     resolver: true
+#   Session:
+#     model: github.com/blueai2022/appsubmission/graphql.Session
+#     # fields:
+#     #   user:
+#     #     resolver: true
+# resolver:
+#   filename: graphql/resolver.go
+#   type: Resolver
+autobind:
+  - "github.com/blueai2022/appsubmission/graphql"

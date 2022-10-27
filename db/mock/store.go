@@ -185,6 +185,21 @@ func (mr *MockStoreMockRecorder) GetUserForUpdate(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserForUpdate", reflect.TypeOf((*MockStore)(nil).GetUserForUpdate), arg0, arg1)
 }
 
+// GetUserSessions mocks base method.
+func (m *MockStore) GetUserSessions(arg0 context.Context, arg1 string) ([]db.Session, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserSessions", arg0, arg1)
+	ret0, _ := ret[0].([]db.Session)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserSessions indicates an expected call of GetUserSessions.
+func (mr *MockStoreMockRecorder) GetUserSessions(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserSessions", reflect.TypeOf((*MockStore)(nil).GetUserSessions), arg0, arg1)
+}
+
 // ListUsers mocks base method.
 func (m *MockStore) ListUsers(arg0 context.Context, arg1 db.ListUsersParams) ([]db.User, error) {
 	m.ctrl.T.Helper()

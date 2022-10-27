@@ -1,4 +1,4 @@
-package adapter
+package healthapi
 
 import (
 	"encoding/json"
@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/blueai2022/appsubmission/config"
-	"github.com/blueai2022/appsubmission/proxy"
 )
 
 const (
@@ -36,7 +35,7 @@ func ICD10(config *config.Config, medicalText string, icdOut interface{}) error 
 	}
 
 	url := fmt.Sprintf("%s://%s%s", backChanProtocol, config.HealthApiServerAddress, config.HealthApiUrlPath)
-	rsp, err := proxy.Post(url, reqBody, jsonContentType)
+	rsp, err := post(url, reqBody, jsonContentType)
 	if err != nil {
 		return err
 	}

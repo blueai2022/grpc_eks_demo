@@ -1,0 +1,33 @@
+scalar Time
+
+type Account {
+  id: ID!
+  isActive: Boolean!
+  isAutoRenewal: Boolean!
+  serviceType: String!
+  planName: String!
+  creditBalance: Int!
+  expiresAt: Time!
+  createdAt: Time!
+}
+
+type User {
+  id: ID!
+  fullName: String!
+  email: String!
+}
+
+type Session {
+  id: ID!
+  refreshToken: String!
+  userAgent: String!
+	clientIp: String!
+	isBlocked: Boolean!
+	expiresAt: Time!
+	createdAt: Time!
+}
+
+type Query {
+  sessions(userId: String!): [Session!]
+}
+

@@ -13,3 +13,7 @@ INSERT INTO sessions (
 -- name: GetSession :one
 SELECT * FROM sessions
 WHERE id = $1 LIMIT 1;
+
+-- name: GetUserSessions :many
+SELECT * FROM sessions
+WHERE username = $1 LIMIT 25;
