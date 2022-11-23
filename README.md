@@ -13,4 +13,4 @@ User Auth, Proxy and Usage Tracking Service for backend Health API to recognize 
 ``make server``
 
 ### Running on AWS EKS
-Auto deployment to EKS (through github action) has been turned on for any code push to master
+Auto deployment to EKS (through github action) has been turned on for any code push to main
